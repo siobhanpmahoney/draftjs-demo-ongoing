@@ -1,0 +1,14 @@
+.draftJsLinkifyPlugin__link__2ittM, .draftJsLinkifyPlugin__link__2ittM:visited {
+  color: #5e93c5;
+  text-decoration: none;
+}
+
+.draftJsLinkifyPlugin__link__2ittM:hover, .draftJsLinkifyPlugin__link__2ittM:focus {
+  color: #7eadda;
+  outline: 0; /* reset for :focus */
+  cursor: pointer;
+}
+
+.draftJsLinkifyPlugin__link__2ittM:active {
+  color: #4a7bab;
+}

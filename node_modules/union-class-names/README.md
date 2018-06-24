@@ -1,0 +1,5 @@
+# unionClassNames Util
+
+## License
+
+MIT

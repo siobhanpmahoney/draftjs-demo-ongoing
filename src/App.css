@@ -1,0 +1,118 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 80px;
+}
+
+.App-header {
+  background-color: #222;
+  height: 150px;
+  padding: 20px;
+  color: white;
+}
+
+.App-title {
+  font-size: 1.5em;
+}
+
+.App-intro {
+  font-size: large;
+}
+
+@keyframes App-logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+html, body {
+  background: linear-gradient(-225deg, #5D9FFF 0%, #B8DCFF 48%, #6BBBFF 100%);
+  /* background-image: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%); */
+  /* background-image: linear-gradient(120deg, #89f7fe 0%, #66a6ff 100%); */
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.editorContainer {
+  padding: 2em;
+  margin: 1em;
+    color: #2C3A51;
+}
+
+.editors {
+  border: none;
+  border-radius: 4px;
+  padding: 1.5em;
+  margin: 1em;
+  font-family: "Calibri";
+  color: #2C3A51;
+  font-size: 110%;
+  text-align: left;
+  background-color: white;
+}
+
+.editors a {
+    color: #1E79FF;
+}
+
+a:hover {
+
+}
+
+.styleButton, #link_url, .RichEditor-styleButton {
+  padding: 0.5em;
+  background: #F9FBFC;
+  border: none;
+  color: #3b465d;
+  margin: 0.35em;
+  border-radius: 6px;
+  width: 2.5em;
+  font-family: "Lato";
+  font-size: 90%;
+  box-shadow: 2px 2px edf3f9;
+  height: 2.25em;
+}
+
+.RichEditor-activeButton {
+  background-color: blue;
+  color: white;
+}
+
+select {
+  padding: 0.5em;
+  background: #F9FBFC;
+  border: none;
+  color: #3b465d;
+  margin: 0.35em;
+  border-radius: 6px;
+  font-family: "PT Serif";
+  font-size: 90%;
+  height: 2.25em;
+  box-shadow: 2px 2px edf3f9;
+}
+
+.styleButton#bold {
+  font-weight: 800;
+}
+
+.styleButton#italic {
+  font-style: italic;
+  font-family: "PT Serif"
+}
+
+.styleButton#underline {
+  text-decoration: underline;
+}
+
+.material-icons {
+  font-size: 90%;
+}
+
+img {
+  min-width: 100px;
+  max-width: 300px;
+  text-align: center;
+}

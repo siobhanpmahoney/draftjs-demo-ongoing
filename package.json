@@ -1,0 +1,23 @@
+{
+  "name": "draftjs-demo",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "css-loader": "^0.28.11",
+    "draft-css": "^0.0.1",
+    "draft-js": "^0.10.5",
+    "draft-js-image-plugin": "^2.0.5",
+    "draft-js-linkify-plugin": "^2.0.1",
+    "draft-js-plugins-editor": "^2.1.1",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
+    "react-scripts": "1.1.4",
+    "style-loader": "^0.21.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}
