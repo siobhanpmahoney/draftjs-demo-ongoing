@@ -1,5 +1,8 @@
 import React from 'react'
-import { EditorState, RichUtils, AtomicBlockUtils } from 'draft-js';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import * as Actions from '../actions'
+import { EditorState, RichUtils, AtomicBlockUtils, convertToRaw, convertFromRaw } from 'draft-js';
 import Editor from 'draft-js-plugins-editor';
 import { mediaBlockRenderer } from './entities/mediaBlockRenderer'
 import basicTextStylePlugin from './plugins/basicTextStylePlugin';
@@ -31,13 +34,73 @@ class PageContainer extends React.Component {
 
   }
 
-  onChange = (editorState) => {
-    if (editorState.getDecorator() !== null) {
-      this.setState({
-        editorState,
-      });
-    }
+  componentDidMount() {
+		let displayedNote = this.props.displayedNote
+		if (typeof displayedNote == "object") {
+			let rawContentFromFile = displayedNote
+			debugger
+			this.setState({
+				editorState: EditorState.createWithContent(convertFromRaw(JSON.parse(this.props.displayedNote.content)))
+			})
+		} else {
+			this.setState({
+				noteTitle: "",
+				editorState: EditorState.createEmpty()
+			})
+		}
+	}
+
+	componentDidUpdate(prevProps, prevState) {
+    if (prevProps.displayedNote != this.props.displayedNote) {
+			let displayedNote = this.props.displayedNote
+			if (typeof displayedNote == "object") {
+				let rawContentFromFile = displayedNote
+				let persistedTitle = displayedNote.title
+				this.setState({
+					editorState: EditorState.createWithContent(convertFromRaw(JSON.parse(this.props.displayedNote.content))),
+					noteTitle: persistedTitle
+				})
+			} else {
+				this.setState({
+					noteTitle: "",
+					editorState: EditorState.createEmpty()
+				})
+
+			}
+		}
   }
+
+  onChange = editorState => {
+		this.setState({
+			editorState
+		});
+	}
+
+
+  submitEditor = () => {
+		let displayedNote = this.props.displayedNote
+		let contentState = this.state.editorState.getCurrentContent()
+		if (displayedNote == "new") {
+			let noteTitle = this.state.noteTitle
+			let note = {title: noteTitle, content: convertToRaw(contentState)}
+			note["content"] = JSON.stringify(note.content)
+			console.log(note)
+			this.props.createNote(note.title, note.content)
+		} else {
+			let noteTitle = this.state.noteTitle
+			let note = {title: noteTitle, content: convertToRaw(contentState)}
+			note["content"] = JSON.stringify(note.content)
+			this.props.updateNote(displayedNote.id, note.title, note.content)
+		}
+	}
+
+	captureTitle = (event) => {
+		event.preventDefault()
+		let value = event.target.value
+		this.setState({
+			noteTitle: value
+		})
+	}
 
   toggleBlockType = (blockType) => {
     this.onChange(RichUtils.toggleBlockType(this.state.editorState, blockType));
@@ -130,8 +193,16 @@ class PageContainer extends React.Component {
   }
 
   render() {
+    console.log(this.props)
+  if (!this.props.displayedNote) {
+    return <div>Loading...</div>
+  }
     return(
       <div className="editorContainer">
+        <div className="aboveEditor">
+    <div><button className="submitNote" onClick={this.submitEditor}>Save</button></div>
+    <input type="text" name="noteTitle" className="noteTitle" value={this.state.noteTitle} onChange={this.captureTitle}/>
+  </div>
         <div className="buttonContainer">
           <button className="inline styleButton" id="underline" onClick={this.onUnderlineClick}>
             U
@@ -181,4 +252,14 @@ class PageContainer extends React.Component {
 }
 
 
-export default PageContainer
+function mapStateToProps(state, props) {
+	return {
+		notes: state.notes.allNotes,
+	}
+}
+
+function mapDispatchToProps(dispatch) {
+	return bindActionCreators(Actions, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(PageContainer)
