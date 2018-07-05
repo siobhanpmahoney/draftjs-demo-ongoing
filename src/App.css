@@ -11,14 +11,16 @@ html, body {
 body {
   background-size: cover;
   font-size: 100%;
+  width: 100%;
 }
 
 .App {
-  text-align: left;
+  /* text-align: left;
   position: relative;
   height: 100%;
   width: 100%;
-  overflow: hidden;
+  overflow: hidden; */
+
   /* overflow: auto; */
 }
 
@@ -42,34 +44,50 @@ body {
       /* container layout begin */
 
 .pageComponents {
+
   display: flex;
+  overflow: hidden;
+  height: 100vh;
+  position: absolute;
+  width: 100%;
+  backface-visibility: hidden;
+  will-change: overflow;
+
+  /* display: flex;
   align-items: stretch;
   align-content: stretch;
   justify-content: space-between;
-  /* position: absolute; */
   width: 100%;
   padding-top: 1em;
-  position: relative;
-  height: 100%;
-  /* overflow: visible; */
-
+  height: 100vh;
+  flex: 1;
+  flex-direction: row;
+  overflow:hidden;
+  position: absolute;
+  backface-visibility: hidden;
+  will-change: overflow; */
 }
 
 .noteListContainer {
-  margin: 0.5em;
-  padding: 0.5em;
-  height: auto;
-  display: flex;
+
+  /* display: flex; */
   text-align: left;
   position: relative;
   overflow-y: auto;
   overflow-x: hidden;
-  flex-direction: column;
-  flex: 1;
-  flex-shrink: 1;
-  flex-wrap: wrap;
-  flex-basis: 30%;
+  /* flex-direction: column; */
+  /* flex: 1; */
+  /* flex-shrink: 1; */
+  /* flex-wrap: wrap; */
 
+  margin: 0.5em;
+  padding: 0.5em;
+  flex-basis: 30%;
+  text-align: left;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: auto;
 
 }
 
@@ -78,22 +96,13 @@ body {
   padding: 1em;
   border-left: #f6f7fb solid 2px;
   color: #2C3A51;
-  display: flex;
   text-align: left;
   position: relative;
   overflow-y: auto;
   overflow-x: hidden;
   height: auto;
-  flex-direction: column;
-  flex: 1;
-  flex-grow: 1;
-  flex-wrap: wrap;
   flex-basis: 68%;
   background: #FBFAFA;
-
-  /* background-color: #fafafa; */
-  /* background-image: radial-gradient(73% 147%, #fef7f8 59%, #fff5f6 100%), radial-gradient(91% 146%, rgba(255,255,255,0.50) 47%, rgba(0,0,0,0.50) 100%);
- background-blend-mode: screen; */
 }
 
 /* container layout end */
