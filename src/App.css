@@ -69,22 +69,13 @@ body {
 }
 
 .noteListContainer {
-
-  /* display: flex; */
-  text-align: left;
   position: relative;
   overflow-y: auto;
   overflow-x: hidden;
-  /* flex-direction: column; */
-  /* flex: 1; */
-  /* flex-shrink: 1; */
-  /* flex-wrap: wrap; */
-
   margin: 0.5em;
-  padding: 0.5em;
+  padding: 1em;
   flex-basis: 30%;
   text-align: left;
-
   overflow-y: auto;
   overflow-x: hidden;
   height: auto;
@@ -113,15 +104,20 @@ body {
 .note-list-header {
   font-size: 20px;
   text-align: center;
-  padding: 1em;
-  margin: 0.25em;
+  padding: 1.5em 1em;
+  margin: 0.25em 0;
+  color: #585656;
 }
 
 .note-list-item {
-  padding: 1em 0.5em;
+  padding: 1.2em;
   font-size: 14px;
   border-bottom: #f5efef solid 1px;
   min-height: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  color: #484545;
 }
 
 .note-list-item:hover {
@@ -165,7 +161,7 @@ input[type="text"].noteTitle {
 .editors {
   border: none;
   border-radius: 4px;
-  padding: 3em 1.5em;
+  padding: 1em 1.5em 3em 1.5em;
   margin: -0.2em 0.6em 1em 0.6em;
   font-family: "HK Grotesk";
   color: #2C3A51;
@@ -177,11 +173,15 @@ input[type="text"].noteTitle {
 }
 
 .editors a {
-    color: #1E79FF;
+  color: blue;
 }
 
-a:hover {
+a {
+  color: blue;
+}
 
+a:visited {
+  color: blue;
 }
 
 img {
@@ -207,7 +207,7 @@ button.submitNote {
   padding: 0.5em;
   color: white;
   border: none;
-  background-color: #ff5f6d;
+  background-color:#ff5370;
   margin: 0.35em;
   /* background-image: linear-gradient(to bottom, #ff5f6d, #ff7a65, #ff9362, #ffac66, #ffc371); */
 }
@@ -218,7 +218,7 @@ button.submitNote {
   padding: 0.5em;
   background: white;
   border: none;
-  color: #FF5370;
+  color: #ff595a;
   margin: 0.35em;
   width: 2.5em;
   font-family: serif;
@@ -233,9 +233,9 @@ button.submitNote {
 
 select {
   padding: 0.5em;
-  background: #F9FBFC;
+  background: white;
   border: none;
-  color: #3b465d;
+  color: #ff595a;
   margin: 0.35em;
   border-radius: 6px;
   font-family: serif;

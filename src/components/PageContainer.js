@@ -149,6 +149,7 @@ class PageContainer extends React.Component {
       url = linkInstance.getData().url;
       const updatedLink = window.prompt('Update link-', url)
       const selection = editorState.getSelection();
+
       if (updatedLink == null) {
         return;
       } else if (url != updatedLink)  {
@@ -171,10 +172,15 @@ class PageContainer extends React.Component {
       return 'handled';
     }
     const content = editorState.getCurrentContent();
+
     const contentWithEntity = content.createEntity('LINK', 'MUTABLE', { url: link });
     const newEditorState = EditorState.push(editorState, contentWithEntity, 'create-entity');
+
     const entityKey = contentWithEntity.getLastCreatedEntityKey();
-    this.onChange(RichUtils.toggleLink(newEditorState, selection, entityKey))
+
+    this.onChange(
+      EditorState.set(RichUtils.toggleLink(newEditorState, selection, entityKey))
+    )
     return 'handled';
   }
 
