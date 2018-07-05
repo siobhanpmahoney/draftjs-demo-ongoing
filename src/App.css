@@ -10,7 +10,7 @@ html, body {
 
 body {
   background-size: cover;
-
+  font-size: 100%;
 }
 
 .App {
@@ -27,7 +27,7 @@ body {
   text-align: center;
   background: linear-gradient(to top, #ff5370, #ff595a);
 
-  font-size: 150%;
+  font-size: 140%;
   padding: 1em;
   color: white;
   padding: 1em 0;
@@ -45,6 +45,7 @@ body {
   display: flex;
   align-items: stretch;
   align-content: stretch;
+  justify-content: space-between;
   /* position: absolute; */
   width: 100%;
   padding-top: 1em;
@@ -67,14 +68,14 @@ body {
   flex: 1;
   flex-shrink: 1;
   flex-wrap: wrap;
-  flex-basis: 34%;
+  flex-basis: 30%;
 
 
 }
 
 .editorContainer {
   margin: 0.5em;
-  padding: 0.5em;
+  padding: 1em;
   border-left: #f6f7fb solid 2px;
   color: #2C3A51;
   display: flex;
@@ -87,8 +88,9 @@ body {
   flex: 1;
   flex-grow: 1;
   flex-wrap: wrap;
-  flex-basis: 64%;
+  flex-basis: 68%;
   background: #FBFAFA;
+
   /* background-color: #fafafa; */
   /* background-image: radial-gradient(73% 147%, #fef7f8 59%, #fff5f6 100%), radial-gradient(91% 146%, rgba(255,255,255,0.50) 47%, rgba(0,0,0,0.50) 100%);
  background-blend-mode: screen; */
@@ -100,13 +102,15 @@ body {
 /* note list style begin  */
 
 .note-list-header {
-  font-size: 1.6em;
+  font-size: 20px;
   text-align: center;
+  padding: 1em;
+  margin: 0.25em;
 }
 
 .note-list-item {
   padding: 1em 0.5em;
-  font-size: 95%;
+  font-size: 14px;
   border-bottom: #f5efef solid 1px;
   min-height: 40px;
 }
@@ -117,15 +121,16 @@ body {
 
 /* note list style end  */
 
+
 .aboveEditor {
-  font-size: 1.3em;
-  padding: 0.25em;
-  margin: 0.25em;
+  font-size: 1.25em;
+  text-align: left;
+  /* margin: 0.5em;
+  padding: 0.5em; */
 }
 
 input[type="text"].noteTitle {
-  font-size: 1.4em;
-  line-height: 1.6em;
+  font-size: 18px;
   font-family: "Open Sans";
   border-bottom: #f6f7fb solid 2px;
   border-top: none;
@@ -133,29 +138,33 @@ input[type="text"].noteTitle {
   border-right: none;
   width: 80%;
   position: inline;
+  padding: 0.5em;
 }
 
 .tool-bar {
   border: #f6f7fb solid 2px;
-  padding: 0.25em;
-  margin: 0.25em;
+  /* margin: 0.25em; */
   text-align: center;
   font-family: serif;
-  background-color: white;
-
+  background-color: #dedcdc;
+  margin: 0.5em 0.5em 0em 0.5em;
+  padding: 0.5em;
+  border-radius: 4px;
+  box-shadow: 0 0 5px rgba(0,0,0,.1);
 }
 
 .editors {
   border: none;
   border-radius: 4px;
-  padding: 1.5em;
-  margin: 1em;
-  font-family: "Open Sans";
+  padding: 3em 1.5em;
+  margin: -0.2em 0.6em 1em 0.6em;
+  font-family: "HK Grotesk";
   color: #2C3A51;
-  font-size: 1em;
+  font-size: 16px;
   text-align: left;
   background-color: white;
   box-shadow: 0 0 5px rgba(0,0,0,.1);
+  min-height: 36%;
 }
 
 .editors a {
@@ -183,29 +192,33 @@ button#new,  {
 
 button.submitNote {
   border-radius: 10px;
-  font-size: 80%;
-  padding: 10px;
+  font-size: 13px;
   float: right;
+  display: inline;
+  padding: 0.5em;
+  color: white;
+  border: none;
+  background-color: #ff5f6d;
+  margin: 0.35em;
+  /* background-image: linear-gradient(to bottom, #ff5f6d, #ff7a65, #ff9362, #ffac66, #ffc371); */
 }
 
 
 
 .styleButton, #link_url, .RichEditor-styleButton {
   padding: 0.5em;
-  background: #F9FBFC;
+  background: white;
   border: none;
-  color: #3b465d;
+  color: #FF5370;
   margin: 0.35em;
-
   width: 2.5em;
   font-family: serif;
-  font-size: 90%;
-  box-shadow: 2px 2px edf3f9;
+  font-size: 13px;
   height: 2.25em;
 }
 
 .RichEditor-activeButton {
-  background-color: blue;
+  background-color: #feb47b;
   color: white;
 }
 
@@ -217,9 +230,8 @@ select {
   margin: 0.35em;
   border-radius: 6px;
   font-family: serif;
-  font-size: 90%;
+  font-size: 13px;;
   height: 2.25em;
-  box-shadow: 2px 2px edf3f9;
 }
 
 .styleButton#bold {
@@ -236,7 +248,7 @@ select {
 }
 
 .material-icons {
-  font-size: 90%;
+  font-size: 13px;
 }
 
 

@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { LOAD_ALL_NOTES, UPDATE_NOTE } from '../actions'
+import { LOAD_ALL_NOTES, UPDATE_NOTE, CREATE_NOTE } from '../actions'
 
 const notes = (state = { allNotes: [], displayedNote: null }, action) => {
   switch(action.type) {
@@ -11,6 +11,18 @@ const notes = (state = { allNotes: [], displayedNote: null }, action) => {
       }
     )
     return state;
+
+    case CREATE_NOTE:
+    console.log(action.newNote)
+      let newNote = action.newNote
+      let oldState = state.allNotes.slice(0)
+      state = Object.assign({},
+        state,
+        {
+          allNotes: [...oldState, newNote]
+        }
+      )
+      return state;
 
     case UPDATE_NOTE:
       let updatedNoteId = action.updated_note.id

@@ -12,21 +12,24 @@ class NoteListContainer extends React.Component {
 
   	componentDidUpdate(prevProps, prevState) {
       if (prevProps != this.props) {
-        this.props.loadAllNotes
+        this.listAllNotes
       }
 
     }
 
-
+  listAllNotes = () => {
+    return this.props.notes.map((note) => {
+      return <NoteListItem selectNote={this.props.selectNote} id={note.id} note={note}/>
+    })
+  }
 
   render() {
     if (this.props.notes.length > 0) {
       return(
         <div className="noteListContainer">
           <span className="note-list-header">All Notes <button onClick={this.props.selectNote} id="new"> + </button></span>
-          {this.props.notes.map((note) => {
-            return <NoteListItem selectNote={this.props.selectNote} id={note.id} note={note}/>
-          })}
+
+        {this.listAllNotes()}
 
         </div>
       )

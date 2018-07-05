@@ -8,7 +8,6 @@ class HeadingStyleDropdown extends React.Component {
   }
 
   render() {
-    console.log(this.props.blockTypeHeadings[0].style, this.props.blockTypeHeadings[0].label)
     let className = "RichEditor-styleButton";
     if (this.props.active) {
       className += " RichEditor-activeButton";

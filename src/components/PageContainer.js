@@ -38,7 +38,6 @@ class PageContainer extends React.Component {
     let displayedNote = this.props.displayedNote
     if (typeof displayedNote == "object") {
       let rawContentFromFile = displayedNote
-      debugger
       this.setState({
         editorState: EditorState.createWithContent(convertFromRaw(JSON.parse(this.props.displayedNote.content)))
       })
@@ -84,13 +83,19 @@ class PageContainer extends React.Component {
       let noteTitle = this.state.noteTitle
       let note = {title: noteTitle, content: convertToRaw(contentState)}
       note["content"] = JSON.stringify(note.content)
-      console.log(note)
-      this.props.createNote(note.title, note.content)
+      this.setState({
+        noteTitle: "",
+        editorState: EditorState.createEmpty()
+      }, () => this.props.createNote(note.title, note.content))
     } else {
       let noteTitle = this.state.noteTitle
       let note = {title: noteTitle, content: convertToRaw(contentState)}
       note["content"] = JSON.stringify(note.content)
-      this.props.updateNote(displayedNote.id, note.title, note.content)
+      this.setState({
+        noteTitle: "",
+        editorState: EditorState.createEmpty()
+      }, () => this.props.updateNote(displayedNote.id, note.title, note.content))
+
     }
   }
 
@@ -193,7 +198,6 @@ class PageContainer extends React.Component {
   }
 
   render() {
-    console.log(this.props)
     if (!this.props.displayedNote) {
       return <div>Loading...</div>
     }
@@ -205,7 +209,7 @@ class PageContainer extends React.Component {
 
 
           <span className="noteTitle">
-            <input type="text" name="noteTitle" className="noteTitle" value={this.state.noteTitle} onChange={this.captureTitle}/>
+            <input type="text" placeholder="Title" name="noteTitle" className="noteTitle" value={this.state.noteTitle} onChange={this.captureTitle}/>
           </span>
 
           <button className="submitNote" onClick={this.submitEditor}>

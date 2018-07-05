@@ -25,15 +25,16 @@ class App extends Component {
 	}
 
 	componentDidUpdate(prevProps, prevState) {
+
 		if (prevProps.notes.length != this.props.notes.length) {
 			this.setState({
 				displayedNote: "new"
-			}, this.props.loadAllNotes())
+			})
 		}
 	}
 
 	selectNote = (event) => {
-		console.log("in selectNote")
+
 		let target_id = event.target.id
 		let selected = ""
 		if (target_id != "new") {

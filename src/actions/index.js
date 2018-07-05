@@ -14,7 +14,6 @@ export function loadAllNotes() {
 }
 
 export function createNote(noteTitle, noteContent) {
-  debugger
   return (dispatch) => {
     fetch('http://localhost:3000/api/v1/notes',
     {
@@ -31,7 +30,7 @@ export function createNote(noteTitle, noteContent) {
     .then(json => {
       dispatch({
         type: CREATE_NOTE,
-        newTask: json
+        newNote: json
       })
     })
   }
