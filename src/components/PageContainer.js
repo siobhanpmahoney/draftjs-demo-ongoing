@@ -35,72 +35,72 @@ class PageContainer extends React.Component {
   }
 
   componentDidMount() {
-		let displayedNote = this.props.displayedNote
-		if (typeof displayedNote == "object") {
-			let rawContentFromFile = displayedNote
-			debugger
-			this.setState({
-				editorState: EditorState.createWithContent(convertFromRaw(JSON.parse(this.props.displayedNote.content)))
-			})
-		} else {
-			this.setState({
-				noteTitle: "",
-				editorState: EditorState.createEmpty()
-			})
-		}
-	}
+    let displayedNote = this.props.displayedNote
+    if (typeof displayedNote == "object") {
+      let rawContentFromFile = displayedNote
+      debugger
+      this.setState({
+        editorState: EditorState.createWithContent(convertFromRaw(JSON.parse(this.props.displayedNote.content)))
+      })
+    } else {
+      this.setState({
+        noteTitle: "",
+        editorState: EditorState.createEmpty()
+      })
+    }
+  }
 
-	componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps, prevState) {
     if (prevProps.displayedNote != this.props.displayedNote) {
-			let displayedNote = this.props.displayedNote
-			if (typeof displayedNote == "object") {
-				let rawContentFromFile = displayedNote
-				let persistedTitle = displayedNote.title
-				this.setState({
-					editorState: EditorState.createWithContent(convertFromRaw(JSON.parse(this.props.displayedNote.content))),
-					noteTitle: persistedTitle
-				})
-			} else {
-				this.setState({
-					noteTitle: "",
-					editorState: EditorState.createEmpty()
-				})
+      let displayedNote = this.props.displayedNote
+      if (typeof displayedNote == "object") {
+        let rawContentFromFile = displayedNote
+        let persistedTitle = displayedNote.title
+        this.setState({
+          editorState: EditorState.createWithContent(convertFromRaw(JSON.parse(this.props.displayedNote.content))),
+          noteTitle: persistedTitle
+        })
+      } else {
+        this.setState({
+          noteTitle: "",
+          editorState: EditorState.createEmpty()
+        })
 
-			}
-		}
+      }
+    }
   }
 
   onChange = editorState => {
-		this.setState({
-			editorState
-		});
-	}
+    this.setState({
+      editorState
+    });
+  }
 
 
   submitEditor = () => {
-		let displayedNote = this.props.displayedNote
-		let contentState = this.state.editorState.getCurrentContent()
-		if (displayedNote == "new") {
-			let noteTitle = this.state.noteTitle
-			let note = {title: noteTitle, content: convertToRaw(contentState)}
-			note["content"] = JSON.stringify(note.content)
-			console.log(note)
-			this.props.createNote(note.title, note.content)
-		} else {
-			let noteTitle = this.state.noteTitle
-			let note = {title: noteTitle, content: convertToRaw(contentState)}
-			note["content"] = JSON.stringify(note.content)
-			this.props.updateNote(displayedNote.id, note.title, note.content)
-		}
-	}
+    let displayedNote = this.props.displayedNote
+    let contentState = this.state.editorState.getCurrentContent()
+    if (displayedNote == "new") {
+      let noteTitle = this.state.noteTitle
+      let note = {title: noteTitle, content: convertToRaw(contentState)}
+      note["content"] = JSON.stringify(note.content)
+      console.log(note)
+      this.props.createNote(note.title, note.content)
+    } else {
+      let noteTitle = this.state.noteTitle
+      let note = {title: noteTitle, content: convertToRaw(contentState)}
+      note["content"] = JSON.stringify(note.content)
+      this.props.updateNote(displayedNote.id, note.title, note.content)
+    }
+  }
 
-	captureTitle = (event) => {
-		event.preventDefault()
-		let value = event.target.value
-		this.setState({
-			noteTitle: value
-		})
-	}
+  captureTitle = (event) => {
+    event.preventDefault()
+    let value = event.target.value
+    this.setState({
+      noteTitle: value
+    })
+  }
 
   toggleBlockType = (blockType) => {
     this.onChange(RichUtils.toggleBlockType(this.state.editorState, blockType));
@@ -194,16 +194,28 @@ class PageContainer extends React.Component {
 
   render() {
     console.log(this.props)
-  if (!this.props.displayedNote) {
-    return <div>Loading...</div>
-  }
+    if (!this.props.displayedNote) {
+      return <div>Loading...</div>
+    }
     return(
       <div className="editorContainer">
         <div className="aboveEditor">
-    <div><button className="submitNote" onClick={this.submitEditor}>Save</button></div>
-    <input type="text" name="noteTitle" className="noteTitle" value={this.state.noteTitle} onChange={this.captureTitle}/>
-  </div>
-        <div className="buttonContainer">
+
+
+
+
+          <span className="noteTitle">
+            <input type="text" name="noteTitle" className="noteTitle" value={this.state.noteTitle} onChange={this.captureTitle}/>
+          </span>
+
+          <button className="submitNote" onClick={this.submitEditor}>
+            Save
+          </button>
+
+        </div>
+
+        <div className="tool-bar">
+
           <button className="inline styleButton" id="underline" onClick={this.onUnderlineClick}>
             U
           </button>
@@ -235,6 +247,7 @@ class PageContainer extends React.Component {
             onToggle={this.toggleBlockType}
             />
         </div>
+
         <div className="editors">
           <Editor
             blockRendererFn={mediaBlockRenderer}
@@ -253,13 +266,13 @@ class PageContainer extends React.Component {
 
 
 function mapStateToProps(state, props) {
-	return {
-		notes: state.notes.allNotes,
-	}
+  return {
+    notes: state.notes.allNotes,
+  }
 }
 
 function mapDispatchToProps(dispatch) {
-	return bindActionCreators(Actions, dispatch);
+  return bindActionCreators(Actions, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(PageContainer)

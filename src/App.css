@@ -1,45 +1,137 @@
+html, body {
+  /* background: linear-gradient(-225deg, #5D9FFF 0%, #B8DCFF 48%, #6BBBFF 100%); */
+  /* background-image: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%); */
+  /* background-image: linear-gradient(120deg, #89f7fe 0%, #66a6ff 100%); */
+  width: 100%;
+  height: 100%;
+  position: relative;
+  font-family: "Open Sans";
+}
+
+body {
+  background-size: cover;
+}
+
 .App {
+  text-align: left;
+  position: relative;
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+}
+
+.headline {
+/* background-image: linear-gradient(-45deg, #FFC796 0%, #FF6B95 100%); */
   text-align: center;
-}
+  background: linear-gradient(to top, #ff5370, #ff595a);
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 80px;
-}
-
-.App-header {
-  background-color: #222;
-  height: 150px;
-  padding: 20px;
+  font-size: 150%;
+  padding: 1em;
   color: white;
 }
 
-.App-title {
-  font-size: 1.5em;
-}
-
-.App-intro {
-  font-size: large;
-}
 
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
 
-html, body {
-  background: linear-gradient(-225deg, #5D9FFF 0%, #B8DCFF 48%, #6BBBFF 100%);
-  /* background-image: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%); */
-  /* background-image: linear-gradient(120deg, #89f7fe 0%, #66a6ff 100%); */
-  width: 100%;
-  height: 100%;
+      /* container layout begin */
+
+.pageComponents {
+  display: flex;
+  align-items: stretch;
+  align-content: stretch;
+    position: relative;
+    width: 100%;
+}
+
+.noteListContainer {
+  margin: 0.5em;
+  padding: 0.5em;
+  height: auto;
+  display: flex;
+  text-align: left;
   position: relative;
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex-direction: column;
+  flex: 1;
+  flex-shrink: 1;
+  flex-wrap: wrap;
+  flex-basis: 34%;
+
+
 }
 
 .editorContainer {
-  padding: 2em;
-  margin: 1em;
-    color: #2C3A51;
+  margin: 0.5em;
+  padding: 0.5em;
+  border-left: #f6f7fb solid 2px;
+  color: #2C3A51;
+  display: flex;
+  text-align: left;
+  position: relative;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: auto;
+  flex-direction: column;
+  flex: 1;
+  flex-grow: 1;
+  flex-wrap: wrap;
+  flex-basis: 64%;
+  /* background-color: #fafafa; */
+  background-image: radial-gradient(73% 147%, #fef7f8 59%, #fff5f6 100%), radial-gradient(91% 146%, rgba(255,255,255,0.50) 47%, rgba(0,0,0,0.50) 100%);
+ background-blend-mode: screen;
+}
+
+/* container layout end */
+
+
+/* note list style begin  */
+
+.note-list-header {
+  font-size: 1.6em;
+  text-align: center;
+}
+
+.note-list-item {
+  padding: 1em 0.5em;
+font-size: 95%;
+border-bottom: #f6f7fb solid 2px;
+min-height: 40px;
+}
+
+.note-list-item:hover {
+  background-color: #f6f7fb;
+}
+
+/* note list style end  */
+
+.aboveEditor {
+  font-size: 1.3em;
+  padding: 0.25em;
+  margin: 0.25em;
+}
+
+input[type="text"].noteTitle {
+  font-size: 1.6em;
+  border-bottom: #f6f7fb solid 2px;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  width: 80%;
+  position: inline;
+}
+
+.tool-bar {
+  border: #f6f7fb solid 2px;
+  padding: 0.25em;
+  margin: 0.25em;
+  text-align: center;
+  font-family: serif;
+  background-color: white;
+
 }
 
 .editors {
@@ -47,11 +139,12 @@ html, body {
   border-radius: 4px;
   padding: 1.5em;
   margin: 1em;
-  font-family: "Calibri";
+  font-family: "Open Sans";
   color: #2C3A51;
-  font-size: 110%;
+  font-size: 1em;
   text-align: left;
   background-color: white;
+  box-shadow: 0 0 5px rgba(0,0,0,.1);
 }
 
 .editors a {
@@ -62,15 +155,39 @@ a:hover {
 
 }
 
+img {
+  min-width: 100px;
+  max-width: 300px;
+  text-align: center;
+}
+
+
+/* button styles begin  */
+
+button#new,  {
+  padding: 0.25em;
+  border-radius: 100px;
+  width: 2em;
+}
+
+button.submitNote {
+  border-radius: 10px;
+  font-size: 80%;
+  padding: 10px;
+  float: right;
+}
+
+
+
 .styleButton, #link_url, .RichEditor-styleButton {
   padding: 0.5em;
   background: #F9FBFC;
   border: none;
   color: #3b465d;
   margin: 0.35em;
-  border-radius: 6px;
+
   width: 2.5em;
-  font-family: "Lato";
+  font-family: serif;
   font-size: 90%;
   box-shadow: 2px 2px edf3f9;
   height: 2.25em;
@@ -88,7 +205,7 @@ select {
   color: #3b465d;
   margin: 0.35em;
   border-radius: 6px;
-  font-family: "PT Serif";
+  font-family: serif;
   font-size: 90%;
   height: 2.25em;
   box-shadow: 2px 2px edf3f9;
@@ -100,7 +217,7 @@ select {
 
 .styleButton#italic {
   font-style: italic;
-  font-family: "PT Serif"
+  font-family: serif;
 }
 
 .styleButton#underline {
@@ -111,8 +228,5 @@ select {
   font-size: 90%;
 }
 
-img {
-  min-width: 100px;
-  max-width: 300px;
-  text-align: center;
-}
+
+/* button styles end */

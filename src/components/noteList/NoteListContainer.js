@@ -22,8 +22,8 @@ class NoteListContainer extends React.Component {
   render() {
     if (this.props.notes.length > 0) {
       return(
-        <div>
-          <button onClick={this.props.selectNote} id="new">New</button>
+        <div className="noteListContainer">
+          <span className="note-list-header">All Notes <button onClick={this.props.selectNote} id="new"> + </button></span>
           {this.props.notes.map((note) => {
             return <NoteListItem selectNote={this.props.selectNote} id={note.id} note={note}/>
           })}
