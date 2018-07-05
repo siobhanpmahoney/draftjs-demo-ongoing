@@ -28,6 +28,7 @@ body {
   font-size: 150%;
   padding: 1em;
   color: white;
+  padding: 1em 0;
 }
 
 
@@ -42,8 +43,10 @@ body {
   display: flex;
   align-items: stretch;
   align-content: stretch;
-    position: relative;
-    width: 100%;
+  position: relative;
+  width: 100%;
+  padding-top: 1em;
+
 }
 
 .noteListContainer {
@@ -80,9 +83,10 @@ body {
   flex-grow: 1;
   flex-wrap: wrap;
   flex-basis: 64%;
+  background: #FBFAFA;
   /* background-color: #fafafa; */
-  background-image: radial-gradient(73% 147%, #fef7f8 59%, #fff5f6 100%), radial-gradient(91% 146%, rgba(255,255,255,0.50) 47%, rgba(0,0,0,0.50) 100%);
- background-blend-mode: screen;
+  /* background-image: radial-gradient(73% 147%, #fef7f8 59%, #fff5f6 100%), radial-gradient(91% 146%, rgba(255,255,255,0.50) 47%, rgba(0,0,0,0.50) 100%);
+ background-blend-mode: screen; */
 }
 
 /* container layout end */
@@ -97,13 +101,13 @@ body {
 
 .note-list-item {
   padding: 1em 0.5em;
-font-size: 95%;
-border-bottom: #f6f7fb solid 2px;
-min-height: 40px;
+  font-size: 95%;
+  border-bottom: #f5efef solid 1px;
+  min-height: 40px;
 }
 
 .note-list-item:hover {
-  background-color: #f6f7fb;
+  background: #FBF1F1;
 }
 
 /* note list style end  */
@@ -115,7 +119,9 @@ min-height: 40px;
 }
 
 input[type="text"].noteTitle {
-  font-size: 1.6em;
+  font-size: 1.4em;
+  line-height: 1.6em;
+  font-family: "Open Sans";
   border-bottom: #f6f7fb solid 2px;
   border-top: none;
   border-left: none;
