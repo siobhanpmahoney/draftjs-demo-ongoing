@@ -2,7 +2,8 @@ import React from 'react'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as Actions from '../actions'
-import { EditorState, RichUtils, AtomicBlockUtils, convertToRaw, convertFromRaw } from 'draft-js';
+import { EditorState, RichUtils, AtomicBlockUtils, SelectionState, convertToRaw, convertFromRaw, CompositeDecorator } from 'draft-js';
+
 import Editor from 'draft-js-plugins-editor';
 import { mediaBlockRenderer } from './entities/mediaBlockRenderer'
 import basicTextStylePlugin from './plugins/basicTextStylePlugin';
@@ -15,6 +16,11 @@ import {
   BlockStyleControls
 } from "./blockStyles/BlockStyles";
 import StyleButton from "./blockStyles/BlockStyles"
+
+
+
+
+
 
 
 const highlightPlugin = createHighlightPlugin();
@@ -39,12 +45,12 @@ class PageContainer extends React.Component {
     if (typeof displayedNote == "object") {
       let rawContentFromFile = displayedNote
       this.setState({
-        editorState: EditorState.createWithContent(convertFromRaw(JSON.parse(this.props.displayedNote.content)))
+        editorState: EditorState.createWithContent(convertFromRaw(JSON.parse(this.props.displayedNote.content)), this.decorator())
       })
     } else {
       this.setState({
         noteTitle: "",
-        editorState: EditorState.createEmpty()
+        editorState: EditorState.createEmpty(this.decorator())
       })
     }
   }
@@ -69,11 +75,48 @@ class PageContainer extends React.Component {
     }
   }
 
-  onChange = editorState => {
-    this.setState({
-      editorState
-    });
-  }
+  decorator = () => new CompositeDecorator([
+   {
+     strategy: this.linkStrategy,
+     component: this.Link,
+   },
+ ]);
+
+ linkStrategy = (contentBlock, callback, contentState) => {
+   contentBlock.findEntityRanges(
+     (character) => {
+       const entityKey = character.getEntity();
+       return (
+         entityKey !== null &&
+         contentState.getEntity(entityKey).getType() === 'LINK'
+       );
+     },
+     callback
+   );
+ };
+
+
+ Link = (props) => {
+   const { contentState, entityKey } = props;
+   const { url } = contentState.getEntity(entityKey).getData();
+   return (
+     <a
+       className="link"
+       rel="noopener noreferrer"
+       target="_blank"
+       aria-label={url}
+       href={url}
+     >{props.children}</a>
+   );
+ };
+
+ onChange = (editorState) => {
+   if (editorState.getDecorator() !== null) {
+     this.setState({
+       editorState,
+     });
+   }
+ }
 
 
   submitEditor = () => {
@@ -155,7 +198,7 @@ class PageContainer extends React.Component {
       } else if (url != updatedLink)  {
         const contentWithEntity = contentState.replaceEntityData(linkKey, { url: updatedLink });
         const newEditorState = EditorState.push(editorState, contentWithEntity, 'create-entity')
-        this.onChange(RichUtils.toggleLink(newEditorState, selection, linkKey))
+        this.onChange(RichUtils.toggleLink(newEditorState, newEditorState.getSelection(), linkKey))
       }
     } else {
       this.onAddLink()
@@ -178,10 +221,9 @@ class PageContainer extends React.Component {
 
     const entityKey = contentWithEntity.getLastCreatedEntityKey();
 
-    this.onChange(
-      EditorState.set(RichUtils.toggleLink(newEditorState, selection, entityKey))
-    )
-    return 'handled';
+    this.onChange(RichUtils.toggleLink(newEditorState, selection, entityKey))
+
+
   }
 
   onURLChange = (e) => this.setState({urlValue: e.target.value});
@@ -260,12 +302,14 @@ class PageContainer extends React.Component {
 
         <div className="editors">
           <Editor
-            blockRendererFn={mediaBlockRenderer}
-            blockStyleFn={getBlockStyle}
+
             editorState={this.state.editorState}
-            handleKeyCommand={this.handleKeyCommand}
+
             onChange= { this.onChange }
             plugins={this.plugins}
+            handleKeyCommand={this.handleKeyCommand}
+            blockRendererFn={mediaBlockRenderer}
+            blockStyleFn={getBlockStyle}
             ref="editor"
             />
         </div>

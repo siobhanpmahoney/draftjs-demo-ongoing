@@ -2,8 +2,7 @@ import React from 'react';
 import {
   RichUtils,
   KeyBindingUtil,
-  EditorState,
-  CompositeDecorator
+  EditorState
 } from 'draft-js';
 
 
@@ -27,10 +26,10 @@ export const Link = (props) => {
   return (
     <a
       className="link"
-      href={url}
       rel="noopener noreferrer"
       target="_blank"
       aria-label={url}
+      href={url}
     >{props.children}</a>
   );
 };
