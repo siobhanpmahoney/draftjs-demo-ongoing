@@ -4,7 +4,7 @@ export const CREATE_NOTE = 'CREATE_NOTE'
 
 export function loadAllNotes() {
   return(dispatch) => {
-    fetch('http://localhost:3000/api/v1/notes')
+    fetch('https://draftjsdemo-api.herokuapp.com//api/v1/notes')
     .then(response => response.json())
     .then(json => dispatch({
       type: LOAD_ALL_NOTES,
@@ -15,7 +15,7 @@ export function loadAllNotes() {
 
 export function createNote(noteTitle, noteContent) {
   return (dispatch) => {
-    fetch('http://localhost:3000/api/v1/notes',
+    fetch('https://draftjsdemo-api.herokuapp.com//api/v1/notes',
     {
       method: 'post',
       headers: {
@@ -38,7 +38,7 @@ export function createNote(noteTitle, noteContent) {
 
 export function updateNote(note_id, note_title, note_content) {
   return (dispatch) => {
-    fetch(`http://localhost:3000/api/v1/notes/${note_id}`,
+    fetch(`https://draftjsdemo-api.herokuapp.com//api/v1/notes/${note_id}`,
       {
         method: 'PATCH',
         headers: {

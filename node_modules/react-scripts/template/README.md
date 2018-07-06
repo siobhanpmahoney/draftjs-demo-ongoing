@@ -168,7 +168,7 @@ In the project directory, you can run:
 ### `npm start`
 
 Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Open [https://draftjsdemo-api.herokuapp.com/](https://draftjsdemo-api.herokuapp.com/) to view it in the browser.
 
 The page will reload if you make edits.<br>
 You will also see any lint errors in the console.
@@ -276,7 +276,7 @@ Then add the block below to your `launch.json` file and put it inside the `.vsco
     "name": "Chrome",
     "type": "chrome",
     "request": "launch",
-    "url": "http://localhost:3000",
+    "url": "https://draftjsdemo-api.herokuapp.com/",
     "webRoot": "${workspaceRoot}/src",
     "sourceMapPathOverrides": {
       "webpack:///src/*": "${webRoot}/*"
@@ -294,7 +294,7 @@ Having problems with VS Code Debugging? Please see their [troubleshooting guide]
 
 You would need to have [WebStorm](https://www.jetbrains.com/webstorm/) and [JetBrains IDE Support](https://chrome.google.com/webstore/detail/jetbrains-ide-support/hmhgeddbohgjknpmjagkdomcpobmllji) Chrome extension installed.
 
-In the WebStorm menu `Run` select `Edit Configurations...`. Then click `+` and select `JavaScript Debug`. Paste `http://localhost:3000` into the URL field and save the configuration.
+In the WebStorm menu `Run` select `Edit Configurations...`. Then click `+` and select `JavaScript Debug`. Paste `https://draftjsdemo-api.herokuapp.com/` into the URL field and save the configuration.
 
 >Note: the URL may be different if you've made adjustments via the [HOST or PORT environment variables](#advanced-configuration).
 
@@ -1067,7 +1067,7 @@ This way, when you `fetch('/api/todos')` in development, the development server 
 Conveniently, this avoids [CORS issues](http://stackoverflow.com/questions/21854516/understanding-ajax-cors-and-security-considerations) and error messages like this in development:
 
 ```
-Fetch API cannot load http://localhost:4000/api/todos. No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'http://localhost:3000' is therefore not allowed access. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.
+Fetch API cannot load http://localhost:4000/api/todos. No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'https://draftjsdemo-api.herokuapp.com/' is therefore not allowed access. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.
 ```
 
 Keep in mind that `proxy` only has effect in development (with `npm start`), and it is up to you to ensure that URLs like `/api/todos` point to the right thing in production. You don’t have to use the `/api` prefix. Any unrecognized request without a `text/html` accept header will be redirected to the specified `proxy`.
