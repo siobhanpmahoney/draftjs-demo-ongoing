@@ -175,6 +175,10 @@ class PageContainer extends React.Component {
     this.onChange(RichUtils.toggleInlineStyle(this.state.editorState, 'ITALIC'))
   }
 
+  onInlineCodeClick = () => {
+    this.onChange(RichUtils.toggleInlineStyle(this.state.editorState, 'CODE'))
+  }
+
   onHighlight = () => {
     this.onChange(RichUtils.toggleInlineStyle(this.state.editorState, 'HIGHLIGHT'))
   }
@@ -284,6 +288,10 @@ class PageContainer extends React.Component {
             <i className="material-icons">border_color</i>
           </button>
 
+          <button className="inline styleButton" id="code" onClick = {this.onInlineCodeClick}>
+           &lt;/&gt;
+          </button>
+
           <button id="link_url" onClick = {this.isAddingOrUpdatingLink} className="add-link">
             <i className="material-icons">attach_file</i>
           </button>
@@ -302,6 +310,9 @@ class PageContainer extends React.Component {
 
         <div className="editors">
           <Editor
+
+            blockStyleFn={getBlockStyle}
+            customStyleMap={styleMap}
 
             editorState={this.state.editorState}
 

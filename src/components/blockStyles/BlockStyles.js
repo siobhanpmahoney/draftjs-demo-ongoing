@@ -6,10 +6,18 @@ import HeadingStyleDropDown from './HeadingStyleDropDown'
 
 export const styleMap = {
 	CODE: {
-		backgroundColor: "rgba(0, 0, 0, 0.05)",
-		fontFamily: '"Inconsolata", "Menlo", "Consolas", monospace',
+		fontFamily: '"Andale Mono", "Menlo", "Consolas", monospace',
+		fontSize: 14,
+		padding: 2,
+		color: '#1d74f5'
+	},
+
+	"code-block": {
+		background: "#eeeded",
+		fontFamily: '"Andale Mono", "Menlo", "Consolas", monospace',
 		fontSize: 16,
-		padding: 2
+		padding: 2,
+		color: '#1d74f5'
 	}
 };
 
@@ -26,7 +34,7 @@ export const BLOCK_TYPES = [
 	{ label: " “ ” ", style: "blockquote" },
 	{ label: "UL", style: "unordered-list-item" },
 	{ label: "OL", style: "ordered-list-item" },
-	{ label: "< / >", style: "code-block" }
+	{ label: "{ }", style: "code-block" }
 ];
 
 export const BLOCK_TYPE_HEADINGS = [
