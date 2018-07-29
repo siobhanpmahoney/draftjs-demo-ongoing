@@ -1,7 +1,5 @@
 html, body {
-  /* background: linear-gradient(-225deg, #5D9FFF 0%, #B8DCFF 48%, #6BBBFF 100%); */
-  /* background-image: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%); */
-  /* background-image: linear-gradient(120deg, #89f7fe 0%, #66a6ff 100%); */
+
   width: 100%;
   height: 100%;
   position: relative;
@@ -25,11 +23,10 @@ body {
 }
 
 .headline {
-/* background-image: linear-gradient(-45deg, #FFC796 0%, #FF6B95 100%); */
   text-align: center;
   background: linear-gradient(to top, #ff5370, #ff595a);
 
-  font-size: 140%;
+  font-size: 110%;
   padding: 1em;
   color: white;
   padding: 1em 0;
@@ -45,13 +42,16 @@ body {
 
 .pageComponents {
 
-  display: flex;
+  display: inline-flex;
   overflow: hidden;
-  height: 100vh;
-  position: absolute;
+  height: 100%;
+  position: fixed;
   width: 100%;
-  backface-visibility: hidden;
-  will-change: overflow;
+  flex-direction: row;
+  justify-content: space-around;
+
+  /* backface-visibility: hidden;
+  will-change: overflow; */
 
   /* display: flex;
   align-items: stretch;
@@ -70,30 +70,36 @@ body {
 
 .noteListContainer {
   position: relative;
-  overflow-y: auto;
-  overflow-x: hidden;
+  /* overflow-y: auto;
+  overflow-x: hidden; */
   margin: 0.5em;
   padding: 1em;
-  flex-basis: 30%;
+  flex-basis: 28%;
   text-align: left;
   overflow-y: auto;
   overflow-x: hidden;
-  height: auto;
+  height: 80vh;
+  order: 1;
+  flex: 0 1 auto;
 
 }
 
 .editorContainer {
-  margin: 0.5em;
-  padding: 1em;
+  margin: 0em;
+  padding: 2em;
   border-left: #f6f7fb solid 2px;
   color: #2C3A51;
   text-align: left;
   position: relative;
-  overflow-y: auto;
+  overflow-y: hidden;
   overflow-x: hidden;
-  height: auto;
-  flex-basis: 68%;
+  order: 2;
+  height: 100vh;
+  flex: 1 0 auto;
+  flex-basis: 60%;
   background: #FBFAFA;
+  align-items: center;
+  align-self: stretch
 }
 
 /* container layout end */
@@ -135,7 +141,7 @@ body {
 }
 
 input[type="text"].noteTitle {
-  font-size: 18px;
+  font-size: 16px;
   font-family: "Open Sans";
   border-bottom: #f6f7fb solid 2px;
   border-top: none;
@@ -144,11 +150,11 @@ input[type="text"].noteTitle {
   width: 80%;
   position: inline;
   padding: 0.5em;
+  margin-left: 0.6em
 }
 
 .tool-bar {
   border: #f6f7fb solid 2px;
-  /* margin: 0.25em; */
   text-align: center;
   font-family: serif;
   background-color: #dedcdc;
@@ -163,13 +169,19 @@ input[type="text"].noteTitle {
   border-radius: 4px;
   padding: 1em 1.5em 3em 1.5em;
   margin: -0.2em 0.6em 1em 0.6em;
-  font-family: "HK Grotesk";
+  font-family: sans-serif;
   color: #2C3A51;
   font-size: 16px;
   text-align: left;
   background-color: white;
   box-shadow: 0 0 5px rgba(0,0,0,.1);
   min-height: 36%;
+  overflow-x:hidden;
+  overflow-y:auto;
+  position: relative;
+  height: 25vh;
+  font-size: 90%;
+
 }
 
 .editors a {
@@ -209,7 +221,6 @@ button.submitNote {
   border: none;
   background-color:#ff5370;
   margin: 0.35em;
-  /* background-image: linear-gradient(to bottom, #ff5f6d, #ff7a65, #ff9362, #ffac66, #ffc371); */
 }
 
 
