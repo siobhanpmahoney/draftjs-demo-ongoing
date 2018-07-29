@@ -19,9 +19,9 @@ body {
   background: linear-gradient(to top, #ff5370, #ff595a);
 
   font-size: 110%;
-  padding: 1em;
+  /* padding: 1em; */
   color: white;
-  padding: 1em 0;
+  padding: 0.8em 0;
 }
 
 
@@ -43,15 +43,17 @@ body {
 .noteListContainer {
   position: relative;
 
-  margin: 0.5em;
-  padding: 1em;
+  margin: 1em 0em;
+  padding: 1em 0em 1em 0em;
   flex-basis: 28%;
   text-align: left;
-  overflow-y: auto;
+  /* overflow-y: auto;
   overflow-x: hidden;
-  height: 70vh;
+  height: 70vh; */
   order: 1;
-  flex: 0 1 auto;
+  flex-shrink: 1;
+
+
 
 }
 
@@ -82,15 +84,27 @@ body {
   font-size: 20px;
   text-align: center;
   padding: 1.5em 1em;
-  margin: 0.25em 0;
+  margin: 0.75em;
   color: #585656;
+  position: sticky;
+  top: 0;
+  align-items: center
+
+}
+
+.note-list {
+  position: relative;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 68vh;
+  margin: 0.5em 0 0.5em 0.5em;
 }
 
 .note-list-item {
-  padding: 1.2em;
+  padding: 1.1em;
   font-size: 14px;
   border-bottom: #f5efef solid 1px;
-  min-height: 40px;
+  min-height: 24px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -149,7 +163,7 @@ input[type="text"].noteTitle {
   overflow-x:hidden;
   overflow-y:auto;
   position: relative;
-  height: 25vh;
+  height: 40vh;
   font-size: 90%;
 
 }
@@ -191,6 +205,20 @@ button.submitNote {
   border: none;
   background-color:#ff5370;
   margin: 0.35em;
+}
+
+.code-block, div.code-block {
+  color: #90caf9;
+  line-height: 1.2;
+  padding: 3px;
+  margin-left: 4px;
+  background-color: black;
+  font-family: "Andale Mono";
+  font-size: 13px;
+  box-sizing: border-box;
+  white-space: pre-wrap;
+  display: block;
+
 }
 
 

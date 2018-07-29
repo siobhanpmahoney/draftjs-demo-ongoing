@@ -32,6 +32,8 @@ class NoteListContainer extends React.Component {
             All Notes <button onClick={this.props.selectNote} id="new"> + </button>
         </span>
 
+        <div className="note-list">
+
         <NoteListItem selectNote={this.props.selectNote} id="2" note={this.props.notes.find((n) => n.id == "2")}/>
 
         <NoteListItem selectNote={this.props.selectNote} id="2" note={this.props.notes.find((n) => n.id == "1")}/>
@@ -47,6 +49,7 @@ class NoteListContainer extends React.Component {
 
 
         {this.listAllNotes()}
+      </div>
 
         </div>
       )

@@ -9,22 +9,21 @@ export const styleMap = {
 		fontFamily: '"Andale Mono", "Menlo", "Consolas", monospace',
 		fontSize: 14,
 		padding: 2,
-		color: '#1d74f5'
+		color: '#ff595a'
 	},
 
-	"code-block": {
-		background: "#eeeded",
-		fontFamily: '"Andale Mono", "Menlo", "Consolas", monospace',
-		fontSize: 16,
-		padding: 2,
-		color: '#1d74f5'
-	}
+
 };
+
+
 
 export function getBlockStyle(block) {
 	switch (block.getType()) {
 		case "blockquote":
 			return "RichEditor-blockquote";
+
+		case "code-block":
+			return "code-block";
 		default:
 			return null;
 	}
