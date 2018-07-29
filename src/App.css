@@ -25,10 +25,6 @@ body {
 }
 
 
-@keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
 
       /* container layout begin */
 
@@ -53,7 +49,7 @@ body {
   text-align: left;
   overflow-y: auto;
   overflow-x: hidden;
-  height: 80vh;
+  height: 70vh;
   order: 1;
   flex: 0 1 auto;
 

@@ -18,7 +18,8 @@ class NoteListContainer extends React.Component {
     }
 
   listAllNotes = () => {
-    return this.props.notes.map((note) => {
+    return this.props.notes.sort((a,b) => parseInt(a.id) - parseInt(b.id)).map((note) => {
+      if (note.id != 2 && note.id !="1" && note.id !="6" && note.id !="4" && note.id != "5" && note.id != "3")
       return <NoteListItem selectNote={this.props.selectNote} id={note.id} note={note}/>
     })
   }
@@ -27,7 +28,23 @@ class NoteListContainer extends React.Component {
     if (this.props.notes.length > 0) {
       return(
         <div className="noteListContainer">
-          <span className="note-list-header">All Notes <button onClick={this.props.selectNote} id="new"> + </button></span>
+          <span className="note-list-header">
+            All Notes <button onClick={this.props.selectNote} id="new"> + </button>
+        </span>
+
+        <NoteListItem selectNote={this.props.selectNote} id="2" note={this.props.notes.find((n) => n.id == "2")}/>
+
+        <NoteListItem selectNote={this.props.selectNote} id="2" note={this.props.notes.find((n) => n.id == "1")}/>
+
+          <NoteListItem selectNote={this.props.selectNote} id="2" note={this.props.notes.find((n) => n.id == "6")}/>
+
+          <NoteListItem selectNote={this.props.selectNote} id="2" note={this.props.notes.find((n) => n.id == "4")}/>
+
+          <NoteListItem selectNote={this.props.selectNote} id="2" note={this.props.notes.find((n) => n.id == "5")}/>
+
+          <NoteListItem selectNote={this.props.selectNote} id="2" note={this.props.notes.find((n) => n.id == "3")}/>
+
+
 
         {this.listAllNotes()}
 
