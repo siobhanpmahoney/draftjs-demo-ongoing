@@ -9,6 +9,7 @@ import { mediaBlockRenderer } from './entities/mediaBlockRenderer'
 import basicTextStylePlugin from './plugins/basicTextStylePlugin';
 import addLinkPlugin from './plugins/addLinkPlugin';
 import createHighlightPlugin from './plugins/highlightPlugin';
+import {InlineStyles} from './inlineStyles/InlineStyles'
 import {
   styleMap,
   getBlockStyle,
@@ -150,6 +151,10 @@ class PageContainer extends React.Component {
     })
   }
 
+  toggleInlineStyle = (style) => {
+    this.onChange(RichUtils.toggleInlineStyle(this.state.editorState, style))
+  }
+
   toggleBlockType = (blockType) => {
     this.onChange(RichUtils.toggleBlockType(this.state.editorState, blockType));
   };
@@ -161,26 +166,6 @@ class PageContainer extends React.Component {
       return 'handled';
     }
     return 'not-handled';
-  }
-
-  onUnderlineClick = () => {
-    this.onChange(RichUtils.toggleInlineStyle(this.state.editorState, 'UNDERLINE'));
-  }
-
-  onBoldClick = () => {
-    this.onChange(RichUtils.toggleInlineStyle(this.state.editorState, 'BOLD'))
-  }
-
-  onItalicClick = () => {
-    this.onChange(RichUtils.toggleInlineStyle(this.state.editorState, 'ITALIC'))
-  }
-
-  onInlineCodeClick = () => {
-    this.onChange(RichUtils.toggleInlineStyle(this.state.editorState, 'CODE'))
-  }
-
-  onHighlight = () => {
-    this.onChange(RichUtils.toggleInlineStyle(this.state.editorState, 'HIGHLIGHT'))
   }
 
   isAddingOrUpdatingLink = () => {
@@ -272,18 +257,6 @@ class PageContainer extends React.Component {
 
         <div className="tool-bar">
 
-          <button className="inline styleButton" id="underline" onClick={this.onUnderlineClick}>
-            U
-          </button>
-
-          <button className="inline styleButton" id="bold"onClick={this.onBoldClick}>
-            B
-          </button>
-
-          <button className="inline styleButton" id="italic" onClick={this.onItalicClick}>
-            I
-          </button>
-
           <button className="inline styleButton" id="highlight" onClick = {this.onHighlight}>
             <i className="material-icons">border_color</i>
           </button>
@@ -299,6 +272,8 @@ class PageContainer extends React.Component {
           <button className="inline styleButton" onClick={this.onAddImage}>
             <i className="material-icons">photo</i>
           </button>
+
+          <InlineStyles editorState={this.state.editorState} onToggle={this.toggleInlineStyle}/>
 
 
 

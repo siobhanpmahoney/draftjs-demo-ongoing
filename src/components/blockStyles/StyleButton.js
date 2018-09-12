@@ -12,17 +12,19 @@ class StyleButton extends React.Component {
 
   onToggle = (e) => {
     e.preventDefault()
+
     this.props.onToggle(this.props.style)
   }
 
   render() {
-    let className = "RichEditor-styleButton";
+    console.log(this.props)
+    let className = "RichEditor-styleButton inline styleButton";
     if (this.props.active) {
       className += " RichEditor-activeButton";
     }
 
     return (
-        <span className={className} onMouseDown={this.onToggle}>
+        <span className={className} id={this.props.id || ""} onMouseDown={this.onToggle}>
         {this.props.label}
         </span>
     );
