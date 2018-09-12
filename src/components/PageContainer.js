@@ -77,69 +77,61 @@ class PageContainer extends React.Component {
   }
 
   decorator = () => new CompositeDecorator([
-   {
-     strategy: this.linkStrategy,
-     component: this.Link,
-   },
- ]);
+    {
+      strategy: this.linkStrategy,
+      component: this.Link,
+    },
+  ]);
 
- linkStrategy = (contentBlock, callback, contentState) => {
-   contentBlock.findEntityRanges(
-     (character) => {
-       const entityKey = character.getEntity();
-       return (
-         entityKey !== null &&
-         contentState.getEntity(entityKey).getType() === 'LINK'
-       );
-     },
-     callback
-   );
- };
+  linkStrategy = (contentBlock, callback, contentState) => {
+    contentBlock.findEntityRanges(
+      (character) => {
+        const entityKey = character.getEntity();
+        return (
+          entityKey !== null &&
+          contentState.getEntity(entityKey).getType() === 'LINK'
+        );
+      },
+      callback
+    );
+  };
 
 
- Link = (props) => {
-   const { contentState, entityKey } = props;
-   const { url } = contentState.getEntity(entityKey).getData();
-   return (
-     <a
-       className="link"
-       rel="noopener noreferrer"
-       target="_blank"
-       aria-label={url}
-       href={url}
-     >{props.children}</a>
-   );
- };
+  Link = (props) => {
+    const { contentState, entityKey } = props;
+    const { url } = contentState.getEntity(entityKey).getData();
+    return (
+      <a
+        className="link"
+        rel="noopener noreferrer"
+        target="_blank"
+        aria-label={url}
+        href={url}
+        >{props.children}</a>
+    );
+  };
 
- onChange = (editorState) => {
-   if (editorState.getDecorator() !== null) {
-     this.setState({
-       editorState,
-     });
-   }
- }
+  onChange = (editorState) => {
+    if (editorState.getDecorator() !== null) {
+      this.setState({
+        editorState,
+      });
+    }
+  }
 
 
   submitEditor = () => {
     let displayedNote = this.props.displayedNote
     let contentState = this.state.editorState.getCurrentContent()
-    if (displayedNote == "new") {
-      let noteTitle = this.state.noteTitle
-      let note = {title: noteTitle, content: convertToRaw(contentState)}
-      note["content"] = JSON.stringify(note.content)
-      this.setState({
-        noteTitle: "",
-        editorState: EditorState.createEmpty()
-      }, () => this.props.createNote(note.title, note.content))
+    let note = {title: this.state.noteTitle, content: convertToRaw(contentState)}
+    if (this.state.noteTitle == "" || (note.content.blocks.length <= 1 && note.content.blocks[0].depth === 0 && note.content.blocks[0].text == "")) {
+      alert("Note cannot be saved if title or content is blank")
     } else {
-      let noteTitle = this.state.noteTitle
-      let note = {title: noteTitle, content: convertToRaw(contentState)}
       note["content"] = JSON.stringify(note.content)
       this.setState({
         noteTitle: "",
         editorState: EditorState.createEmpty()
-      }, () => this.props.updateNote(displayedNote.id, note.title, note.content))
-
+      }, () => displayedNote == "new" ? this.props.createNote(note.title, note.content) : this.props.updateNote(displayedNote.id, note.title, note.content))
     }
   }
 
