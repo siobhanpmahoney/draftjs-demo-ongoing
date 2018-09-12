@@ -28,10 +28,16 @@ export function createNote(noteTitle, noteContent) {
     })
     .then(response => response.json())
     .then(json => {
-      dispatch({
-        type: CREATE_NOTE,
-        newNote: json
-      })
+      if (json.error) {
+        alert(json.error)
+      }
+      else {
+        dispatch({
+          type: CREATE_NOTE,
+          newNote: json
+        })
+
+      }
     })
   }
 }
