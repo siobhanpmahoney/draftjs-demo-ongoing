@@ -257,14 +257,6 @@ class PageContainer extends React.Component {
 
         <div className="tool-bar">
 
-          <button className="inline styleButton" id="highlight" onClick = {this.onHighlight}>
-            <i className="material-icons">border_color</i>
-          </button>
-
-          <button className="inline styleButton" id="code" onClick = {this.onInlineCodeClick}>
-           &lt;/&gt;
-          </button>
-
           <button id="link_url" onClick = {this.isAddingOrUpdatingLink} className="add-link">
             <i className="material-icons">attach_file</i>
           </button>
