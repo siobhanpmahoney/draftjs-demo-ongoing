@@ -137,7 +137,7 @@ function OutputStream(options) {
     function make_string(str, quote) {
         var dq = 0, sq = 0;
         str = str.replace(/[\\\b\f\n\r\v\t\x22\x27\u2028\u2029\0\ufeff]/g,
-          function(s, i){
+          function(s, i) {
             switch (s) {
               case '"': ++dq; return '"';
               case "'": ++sq; return "'";
@@ -198,16 +198,24 @@ function OutputStream(options) {
     /* -----[ beautification/minification ]----- */
 
     var has_parens = false;
+    var line_end = 0;
+    var line_fixed = true;
     var might_need_space = false;
     var might_need_semicolon = false;
-    var might_add_newline = 0;
     var need_newline_indented = false;
     var need_space = false;
     var newline_insert = -1;
     var last = "";
     var mapping_token, mapping_name, mappings = options.source_map && [];
 
-    var do_add_mapping = mappings ? function() {
+    var adjust_mappings = mappings ? function(line, col) {
+        mappings.forEach(function(mapping) {
+            mapping.line += line;
+            mapping.col += col;
+        });
+    } : noop;
+
+    var flush_mappings = mappings ? function() {
         mappings.forEach(function(mapping) {
             try {
                 options.source_map.add(
@@ -230,31 +238,30 @@ function OutputStream(options) {
         mappings = [];
     } : noop;
 
-    var ensure_line_len = options.max_line_len ? function() {
-        if (current_col > options.max_line_len) {
-            if (might_add_newline) {
-                var left = OUTPUT.slice(0, might_add_newline);
-                var right = OUTPUT.slice(might_add_newline);
-                if (mappings) {
-                    var delta = right.length - current_col;
-                    mappings.forEach(function(mapping) {
-                        mapping.line++;
-                        mapping.col += delta;
-                    });
-                }
-                OUTPUT = left + "\n" + right;
-                current_line++;
-                current_pos++;
-                current_col = right.length;
-            }
+    function insert_newlines(count) {
+        var index = OUTPUT.lastIndexOf("\n");
+        if (line_end < index) line_end = index;
+        var left = OUTPUT.slice(0, line_end);
+        var right = OUTPUT.slice(line_end);
+        adjust_mappings(count, right.length - current_col);
+        current_line += count;
+        current_pos += count;
+        current_col = right.length;
+        OUTPUT = left;
+        while (count--) OUTPUT += "\n";
+        OUTPUT += right;
+    }
+
+    var fix_line = options.max_line_len ? function() {
+        if (line_fixed) {
             if (current_col > options.max_line_len) {
                 AST_Node.warn("Output exceeds {max_line_len} characters", options);
             }
+            return;
         }
-        if (might_add_newline) {
-            might_add_newline = 0;
-            do_add_mapping();
-        }
+        if (current_col > options.max_line_len) insert_newlines(1);
+        line_fixed = true;
+        flush_mappings();
     } : noop;
 
     var requireSemicolonChars = makePredicate("( [ + * / - , .");
@@ -286,7 +293,7 @@ function OutputStream(options) {
                     current_col++;
                     current_pos++;
                 } else {
-                    ensure_line_len();
+                    fix_line();
                     OUTPUT += "\n";
                     current_pos++;
                     current_line++;
@@ -301,18 +308,6 @@ function OutputStream(options) {
 
                 if (!options.beautify)
                     might_need_space = false;
-            }
-        }
-
-        if (!options.beautify && options.preserve_line && stack[stack.length - 1]) {
-            var target_line = stack[stack.length - 1].start.line;
-            while (current_line < target_line) {
-                ensure_line_len();
-                OUTPUT += "\n";
-                current_pos++;
-                current_line++;
-                current_col = 0;
-                might_need_space = false;
             }
         }
 
@@ -337,7 +332,7 @@ function OutputStream(options) {
                 col: current_col
             });
             mapping_token = false;
-            if (!might_add_newline) do_add_mapping();
+            if (line_fixed) flush_mappings();
         }
 
         OUTPUT += str;
@@ -347,7 +342,7 @@ function OutputStream(options) {
         current_line += n;
         current_col += a[0].length;
         if (n > 0) {
-            ensure_line_len();
+            fix_line();
             current_col = a[n].length;
         }
         last = str;
@@ -374,9 +369,10 @@ function OutputStream(options) {
         return ret;
     } : function(col, cont) { return cont() };
 
-    var may_add_newline = options.max_line_len ? function() {
-        ensure_line_len();
-        might_add_newline = OUTPUT.length;
+    var may_add_newline = options.max_line_len || options.preserve_line ? function() {
+        fix_line();
+        line_end = OUTPUT.length;
+        line_fixed = false;
     } : noop;
 
     var newline = options.beautify ? function() {
@@ -408,7 +404,7 @@ function OutputStream(options) {
         var ret;
         print("{");
         newline();
-        with_indent(next_indent(), function(){
+        with_indent(next_indent(), function() {
             ret = cont();
         });
         indent();
@@ -455,9 +451,7 @@ function OutputStream(options) {
     } : noop;
 
     function get() {
-        if (might_add_newline) {
-            ensure_line_len();
-        }
+        if (!line_fixed) fix_line();
         return OUTPUT;
     }
 
@@ -622,7 +616,14 @@ function OutputStream(options) {
         col             : function() { return current_col },
         pos             : function() { return current_pos },
         push_node       : function(node) { stack.push(node) },
-        pop_node        : function() { return stack.pop() },
+        pop_node        : options.preserve_line ? function() {
+            var node = stack.pop();
+            if (node.start && node.start.line > current_line) {
+                insert_newlines(node.start.line - current_line);
+            }
+        } : function() {
+            stack.pop();
+        },
         parent          : function(n) {
             return stack[stack.length - 2 - (n || 0)];
         }
@@ -631,7 +632,7 @@ function OutputStream(options) {
 
 /* -----[ code generators ]----- */
 
-(function(){
+(function() {
 
     /* -----[ utils ]----- */
 
@@ -643,7 +644,7 @@ function OutputStream(options) {
     var active_scope = null;
     var use_asm = null;
 
-    AST_Node.DEFMETHOD("print", function(stream, force_parens){
+    AST_Node.DEFMETHOD("print", function(stream, force_parens) {
         var self = this, generator = self._codegen;
         if (self instanceof AST_Scope) {
             active_scope = self;
@@ -670,7 +671,7 @@ function OutputStream(options) {
     });
     AST_Node.DEFMETHOD("_print", AST_Node.prototype.print);
 
-    AST_Node.DEFMETHOD("print_to_string", function(options){
+    AST_Node.DEFMETHOD("print_to_string", function(options) {
         var s = OutputStream(options);
         this.print(s);
         return s.get();
@@ -680,7 +681,7 @@ function OutputStream(options) {
 
     function PARENS(nodetype, func) {
         if (Array.isArray(nodetype)) {
-            nodetype.forEach(function(nodetype){
+            nodetype.forEach(function(nodetype) {
                 PARENS(nodetype, func);
             });
         } else {
@@ -692,39 +693,31 @@ function OutputStream(options) {
 
     // a function expression needs parens around it when it's provably
     // the first token to appear in a statement.
-    PARENS(AST_Function, function(output){
-        if (!output.has_parens() && first_in_statement(output)) {
-            return true;
-        }
-
+    PARENS(AST_Function, function(output) {
+        if (!output.has_parens() && first_in_statement(output)) return true;
         if (output.option('webkit')) {
             var p = output.parent();
-            if (p instanceof AST_PropAccess && p.expression === this) {
-                return true;
-            }
+            if (p instanceof AST_PropAccess && p.expression === this) return true;
         }
-
         if (output.option('wrap_iife')) {
             var p = output.parent();
-            return p instanceof AST_Call && p.expression === this;
+            if (p instanceof AST_Call && p.expression === this) return true;
         }
-
-        return false;
     });
 
     // same goes for an object literal, because otherwise it would be
     // interpreted as a block of code.
-    PARENS(AST_Object, function(output){
+    PARENS(AST_Object, function(output) {
         return !output.has_parens() && first_in_statement(output);
     });
 
-    PARENS(AST_Unary, function(output){
+    PARENS(AST_Unary, function(output) {
         var p = output.parent();
         return p instanceof AST_PropAccess && p.expression === this
             || p instanceof AST_Call && p.expression === this;
     });
 
-    PARENS(AST_Sequence, function(output){
+    PARENS(AST_Sequence, function(output) {
         var p = output.parent();
         return p instanceof AST_Call             // (foo, bar)() or foo(1, (2, 3), 4)
             || p instanceof AST_Unary            // !(foo, bar, baz)
@@ -738,7 +731,7 @@ function OutputStream(options) {
         ;
     });
 
-    PARENS(AST_Binary, function(output){
+    PARENS(AST_Binary, function(output) {
         var p = output.parent();
         // (foo && bar)()
         if (p instanceof AST_Call && p.expression === this)
@@ -761,7 +754,7 @@ function OutputStream(options) {
         }
     });
 
-    PARENS(AST_PropAccess, function(output){
+    PARENS(AST_PropAccess, function(output) {
         var p = output.parent();
         if (p instanceof AST_New && p.expression === this) {
             // i.e. new (foo.bar().baz)
@@ -782,21 +775,21 @@ function OutputStream(options) {
         }
     });
 
-    PARENS(AST_Call, function(output){
-        var p = output.parent(), p1;
-        if (p instanceof AST_New && p.expression === this)
-            return true;
-
-        // workaround for Safari bug.
+    PARENS(AST_Call, function(output) {
+        var p = output.parent();
+        if (p instanceof AST_New && p.expression === this) return true;
         // https://bugs.webkit.org/show_bug.cgi?id=123506
-        return this.expression instanceof AST_Function
-            && p instanceof AST_PropAccess
-            && p.expression === this
-            && (p1 = output.parent(1)) instanceof AST_Assign
-            && p1.left === p;
+        if (output.option('webkit')) {
+            var g = output.parent(1);
+            return this.expression instanceof AST_Function
+                && p instanceof AST_PropAccess
+                && p.expression === this
+                && g instanceof AST_Assign
+                && g.left === p;
+        }
     });
 
-    PARENS(AST_New, function(output){
+    PARENS(AST_New, function(output) {
         var p = output.parent();
         if (!need_constructor_parens(this, output)
             && (p instanceof AST_PropAccess // (new Date).getTime(), (new Date)["getTime"]()
@@ -804,7 +797,7 @@ function OutputStream(options) {
             return true;
     });
 
-    PARENS(AST_Number, function(output){
+    PARENS(AST_Number, function(output) {
         var p = output.parent();
         if (p instanceof AST_PropAccess && p.expression === this) {
             var value = this.getValue();
@@ -814,7 +807,7 @@ function OutputStream(options) {
         }
     });
 
-    PARENS([ AST_Assign, AST_Conditional ], function(output){
+    PARENS([ AST_Assign, AST_Conditional ], function(output) {
         var p = output.parent();
         // !(a = false) → true
         if (p instanceof AST_Unary)
@@ -835,11 +828,11 @@ function OutputStream(options) {
 
     /* -----[ PRINTERS ]----- */
 
-    DEFPRINT(AST_Directive, function(self, output){
+    DEFPRINT(AST_Directive, function(self, output) {
         output.print_string(self.value, self.quote);
         output.semicolon();
     });
-    DEFPRINT(AST_Debugger, function(self, output){
+    DEFPRINT(AST_Debugger, function(self, output) {
         output.print("debugger");
         output.semicolon();
     });
@@ -849,7 +842,7 @@ function OutputStream(options) {
     function display_body(body, is_toplevel, output, allow_directives) {
         var last = body.length - 1;
         in_directive = allow_directives;
-        body.forEach(function(stmt, i){
+        body.forEach(function(stmt, i) {
             if (in_directive === true && !(stmt instanceof AST_Directive ||
                 stmt instanceof AST_EmptyStatement ||
                 (stmt instanceof AST_SimpleStatement && stmt.body instanceof AST_String)
@@ -874,24 +867,24 @@ function OutputStream(options) {
         in_directive = false;
     }
 
-    AST_StatementWithBody.DEFMETHOD("_do_print_body", function(output){
+    AST_StatementWithBody.DEFMETHOD("_do_print_body", function(output) {
         force_statement(this.body, output);
     });
 
-    DEFPRINT(AST_Statement, function(self, output){
+    DEFPRINT(AST_Statement, function(self, output) {
         self.body.print(output);
         output.semicolon();
     });
-    DEFPRINT(AST_Toplevel, function(self, output){
+    DEFPRINT(AST_Toplevel, function(self, output) {
         display_body(self.body, true, output, true);
         output.print("");
     });
-    DEFPRINT(AST_LabeledStatement, function(self, output){
+    DEFPRINT(AST_LabeledStatement, function(self, output) {
         self.label.print(output);
         output.colon();
         self.body.print(output);
     });
-    DEFPRINT(AST_SimpleStatement, function(self, output){
+    DEFPRINT(AST_SimpleStatement, function(self, output) {
         self.body.print(output);
         output.semicolon();
     });
@@ -909,37 +902,37 @@ function OutputStream(options) {
             });
         } else print_braced_empty(self, output);
     }
-    DEFPRINT(AST_BlockStatement, function(self, output){
+    DEFPRINT(AST_BlockStatement, function(self, output) {
         print_braced(self, output);
     });
-    DEFPRINT(AST_EmptyStatement, function(self, output){
+    DEFPRINT(AST_EmptyStatement, function(self, output) {
         output.semicolon();
     });
-    DEFPRINT(AST_Do, function(self, output){
+    DEFPRINT(AST_Do, function(self, output) {
         output.print("do");
         output.space();
         make_block(self.body, output);
         output.space();
         output.print("while");
         output.space();
-        output.with_parens(function(){
+        output.with_parens(function() {
             self.condition.print(output);
         });
         output.semicolon();
     });
-    DEFPRINT(AST_While, function(self, output){
+    DEFPRINT(AST_While, function(self, output) {
         output.print("while");
         output.space();
-        output.with_parens(function(){
+        output.with_parens(function() {
             self.condition.print(output);
         });
         output.space();
         self._do_print_body(output);
     });
-    DEFPRINT(AST_For, function(self, output){
+    DEFPRINT(AST_For, function(self, output) {
         output.print("for");
         output.space();
-        output.with_parens(function(){
+        output.with_parens(function() {
             if (self.init) {
                 if (self.init instanceof AST_Definitions) {
                     self.init.print(output);
@@ -965,10 +958,10 @@ function OutputStream(options) {
         output.space();
         self._do_print_body(output);
     });
-    DEFPRINT(AST_ForIn, function(self, output){
+    DEFPRINT(AST_ForIn, function(self, output) {
         output.print("for");
         output.space();
-        output.with_parens(function(){
+        output.with_parens(function() {
             self.init.print(output);
             output.space();
             output.print("in");
@@ -978,10 +971,10 @@ function OutputStream(options) {
         output.space();
         self._do_print_body(output);
     });
-    DEFPRINT(AST_With, function(self, output){
+    DEFPRINT(AST_With, function(self, output) {
         output.print("with");
         output.space();
-        output.with_parens(function(){
+        output.with_parens(function() {
             self.expression.print(output);
         });
         output.space();
@@ -989,7 +982,7 @@ function OutputStream(options) {
     });
 
     /* -----[ functions ]----- */
-    AST_Lambda.DEFMETHOD("_do_print", function(output, nokeyword){
+    AST_Lambda.DEFMETHOD("_do_print", function(output, nokeyword) {
         var self = this;
         if (!nokeyword) {
             output.print("function");
@@ -998,8 +991,8 @@ function OutputStream(options) {
             output.space();
             self.name.print(output);
         }
-        output.with_parens(function(){
-            self.argnames.forEach(function(arg, i){
+        output.with_parens(function() {
+            self.argnames.forEach(function(arg, i) {
                 if (i) output.comma();
                 arg.print(output);
             });
@@ -1007,40 +1000,31 @@ function OutputStream(options) {
         output.space();
         print_braced(self, output, true);
     });
-    DEFPRINT(AST_Lambda, function(self, output){
+    DEFPRINT(AST_Lambda, function(self, output) {
         self._do_print(output);
     });
 
-    /* -----[ exits ]----- */
-    AST_Exit.DEFMETHOD("_do_print", function(output, kind){
+    /* -----[ jumps ]----- */
+    function print_jump(output, kind, target) {
         output.print(kind);
-        if (this.value) {
+        if (target) {
             output.space();
-            this.value.print(output);
+            target.print(output);
         }
         output.semicolon();
-    });
-    DEFPRINT(AST_Return, function(self, output){
-        self._do_print(output, "return");
-    });
-    DEFPRINT(AST_Throw, function(self, output){
-        self._do_print(output, "throw");
-    });
+    }
 
-    /* -----[ loop control ]----- */
-    AST_LoopControl.DEFMETHOD("_do_print", function(output, kind){
-        output.print(kind);
-        if (this.label) {
-            output.space();
-            this.label.print(output);
-        }
-        output.semicolon();
+    DEFPRINT(AST_Return, function(self, output) {
+        print_jump(output, "return", self.value);
     });
-    DEFPRINT(AST_Break, function(self, output){
-        self._do_print(output, "break");
+    DEFPRINT(AST_Throw, function(self, output) {
+        print_jump(output, "throw", self.value);
     });
-    DEFPRINT(AST_Continue, function(self, output){
-        self._do_print(output, "continue");
+    DEFPRINT(AST_Break, function(self, output) {
+        print_jump(output, "break", self.label);
+    });
+    DEFPRINT(AST_Continue, function(self, output) {
+        print_jump(output, "continue", self.label);
     });
 
     /* -----[ if ]----- */
@@ -1072,10 +1056,10 @@ function OutputStream(options) {
         }
         force_statement(self.body, output);
     }
-    DEFPRINT(AST_If, function(self, output){
+    DEFPRINT(AST_If, function(self, output) {
         output.print("if");
         output.space();
-        output.with_parens(function(){
+        output.with_parens(function() {
             self.condition.print(output);
         });
         output.space();
@@ -1094,17 +1078,17 @@ function OutputStream(options) {
     });
 
     /* -----[ switch ]----- */
-    DEFPRINT(AST_Switch, function(self, output){
+    DEFPRINT(AST_Switch, function(self, output) {
         output.print("switch");
         output.space();
-        output.with_parens(function(){
+        output.with_parens(function() {
             self.expression.print(output);
         });
         output.space();
         var last = self.body.length - 1;
         if (last < 0) print_braced_empty(self, output);
-        else output.with_block(function(){
-            self.body.forEach(function(branch, i){
+        else output.with_block(function() {
+            self.body.forEach(function(branch, i) {
                 output.indent(true);
                 branch.print(output);
                 if (i < last && branch.body.length > 0)
@@ -1112,19 +1096,19 @@ function OutputStream(options) {
             });
         });
     });
-    AST_SwitchBranch.DEFMETHOD("_do_print_body", function(output){
+    AST_SwitchBranch.DEFMETHOD("_do_print_body", function(output) {
         output.newline();
-        this.body.forEach(function(stmt){
+        this.body.forEach(function(stmt) {
             output.indent();
             stmt.print(output);
             output.newline();
         });
     });
-    DEFPRINT(AST_Default, function(self, output){
+    DEFPRINT(AST_Default, function(self, output) {
         output.print("default:");
         self._do_print_body(output);
     });
-    DEFPRINT(AST_Case, function(self, output){
+    DEFPRINT(AST_Case, function(self, output) {
         output.print("case");
         output.space();
         self.expression.print(output);
@@ -1133,7 +1117,7 @@ function OutputStream(options) {
     });
 
     /* -----[ exceptions ]----- */
-    DEFPRINT(AST_Try, function(self, output){
+    DEFPRINT(AST_Try, function(self, output) {
         output.print("try");
         output.space();
         print_braced(self, output);
@@ -1146,37 +1130,30 @@ function OutputStream(options) {
             self.bfinally.print(output);
         }
     });
-    DEFPRINT(AST_Catch, function(self, output){
+    DEFPRINT(AST_Catch, function(self, output) {
         output.print("catch");
         output.space();
-        output.with_parens(function(){
+        output.with_parens(function() {
             self.argname.print(output);
         });
         output.space();
         print_braced(self, output);
     });
-    DEFPRINT(AST_Finally, function(self, output){
+    DEFPRINT(AST_Finally, function(self, output) {
         output.print("finally");
         output.space();
         print_braced(self, output);
     });
 
-    /* -----[ var/const ]----- */
-    AST_Definitions.DEFMETHOD("_do_print", function(output, kind){
-        output.print(kind);
+    DEFPRINT(AST_Var, function(self, output) {
+        output.print("var");
         output.space();
-        this.definitions.forEach(function(def, i){
+        self.definitions.forEach(function(def, i) {
             if (i) output.comma();
             def.print(output);
         });
         var p = output.parent();
-        var in_for = p instanceof AST_For || p instanceof AST_ForIn;
-        var avoid_semicolon = in_for && p.init === this;
-        if (!avoid_semicolon)
-            output.semicolon();
-    });
-    DEFPRINT(AST_Var, function(self, output){
-        self._do_print(output, "var");
+        if (p && p.init !== self || !(p instanceof AST_For || p instanceof AST_ForIn)) output.semicolon();
     });
 
     function parenthesize_for_noin(node, output, noin) {
@@ -1193,7 +1170,7 @@ function OutputStream(options) {
         node.print(output, parens);
     }
 
-    DEFPRINT(AST_VarDef, function(self, output){
+    DEFPRINT(AST_VarDef, function(self, output) {
         self.name.print(output);
         if (self.value) {
             output.space();
@@ -1206,28 +1183,27 @@ function OutputStream(options) {
     });
 
     /* -----[ other expressions ]----- */
-    DEFPRINT(AST_Call, function(self, output){
+    DEFPRINT(AST_Call, function(self, output) {
         self.expression.print(output);
         if (self instanceof AST_New && !need_constructor_parens(self, output))
             return;
         if (self.expression instanceof AST_Call || self.expression instanceof AST_Lambda) {
             output.add_mapping(self.start);
         }
-        output.with_parens(function(){
-            self.args.forEach(function(expr, i){
+        output.with_parens(function() {
+            self.args.forEach(function(expr, i) {
                 if (i) output.comma();
                 expr.print(output);
             });
         });
     });
-    DEFPRINT(AST_New, function(self, output){
+    DEFPRINT(AST_New, function(self, output) {
         output.print("new");
         output.space();
         AST_Call.prototype._codegen(self, output);
     });
-
-    AST_Sequence.DEFMETHOD("_do_print", function(output){
-        this.expressions.forEach(function(node, index) {
+    DEFPRINT(AST_Sequence, function(self, output) {
+        self.expressions.forEach(function(node, index) {
             if (index > 0) {
                 output.comma();
                 if (output.should_break()) {
@@ -1238,18 +1214,7 @@ function OutputStream(options) {
             node.print(output);
         });
     });
-    DEFPRINT(AST_Sequence, function(self, output){
-        self._do_print(output);
-        // var p = output.parent();
-        // if (p instanceof AST_Statement) {
-        //     output.with_indent(output.next_indent(), function(){
-        //         self._do_print(output);
-        //     });
-        // } else {
-        //     self._do_print(output);
-        // }
-    });
-    DEFPRINT(AST_Dot, function(self, output){
+    DEFPRINT(AST_Dot, function(self, output) {
         var expr = self.expression;
         expr.print(output);
         var prop = self.property;
@@ -1270,13 +1235,13 @@ function OutputStream(options) {
             output.print_name(prop);
         }
     });
-    DEFPRINT(AST_Sub, function(self, output){
+    DEFPRINT(AST_Sub, function(self, output) {
         self.expression.print(output);
         output.print("[");
         self.property.print(output);
         output.print("]");
     });
-    DEFPRINT(AST_UnaryPrefix, function(self, output){
+    DEFPRINT(AST_UnaryPrefix, function(self, output) {
         var op = self.operator;
         output.print(op);
         if (/^[a-z]/i.test(op)
@@ -1287,11 +1252,11 @@ function OutputStream(options) {
         }
         self.expression.print(output);
     });
-    DEFPRINT(AST_UnaryPostfix, function(self, output){
+    DEFPRINT(AST_UnaryPostfix, function(self, output) {
         self.expression.print(output);
         output.print(self.operator);
     });
-    DEFPRINT(AST_Binary, function(self, output){
+    DEFPRINT(AST_Binary, function(self, output) {
         var op = self.operator;
         self.left.print(output);
         if (op[0] == ">" /* ">>" ">>>" ">" ">=" */
@@ -1317,7 +1282,7 @@ function OutputStream(options) {
         }
         self.right.print(output);
     });
-    DEFPRINT(AST_Conditional, function(self, output){
+    DEFPRINT(AST_Conditional, function(self, output) {
         self.condition.print(output);
         output.space();
         output.print("?");
@@ -1329,11 +1294,11 @@ function OutputStream(options) {
     });
 
     /* -----[ literals ]----- */
-    DEFPRINT(AST_Array, function(self, output){
-        output.with_square(function(){
+    DEFPRINT(AST_Array, function(self, output) {
+        output.with_square(function() {
             var a = self.elements, len = a.length;
             if (len > 0) output.space();
-            a.forEach(function(exp, i){
+            a.forEach(function(exp, i) {
                 if (i) output.comma();
                 exp.print(output);
                 // If the final element is a hole, we need to make sure it
@@ -1345,9 +1310,9 @@ function OutputStream(options) {
             if (len > 0) output.space();
         });
     });
-    DEFPRINT(AST_Object, function(self, output){
-        if (self.properties.length > 0) output.with_block(function(){
-            self.properties.forEach(function(prop, i){
+    DEFPRINT(AST_Object, function(self, output) {
+        if (self.properties.length > 0) output.with_block(function() {
+            self.properties.forEach(function(prop, i) {
                 if (i) {
                     output.print(",");
                     output.newline();
@@ -1376,7 +1341,7 @@ function OutputStream(options) {
         }
     }
 
-    DEFPRINT(AST_ObjectKeyVal, function(self, output){
+    DEFPRINT(AST_ObjectKeyVal, function(self, output) {
         print_property_name(self.key, self.quote, output);
         output.colon();
         self.value.print(output);
@@ -1387,27 +1352,27 @@ function OutputStream(options) {
         print_property_name(this.key.name, this.quote, output);
         this.value._do_print(output, true);
     });
-    DEFPRINT(AST_ObjectSetter, function(self, output){
+    DEFPRINT(AST_ObjectSetter, function(self, output) {
         self._print_getter_setter("set", output);
     });
-    DEFPRINT(AST_ObjectGetter, function(self, output){
+    DEFPRINT(AST_ObjectGetter, function(self, output) {
         self._print_getter_setter("get", output);
     });
-    DEFPRINT(AST_Symbol, function(self, output){
+    DEFPRINT(AST_Symbol, function(self, output) {
         var def = self.definition();
         output.print_name(def ? def.mangled_name || def.name : self.name);
     });
     DEFPRINT(AST_Hole, noop);
-    DEFPRINT(AST_This, function(self, output){
+    DEFPRINT(AST_This, function(self, output) {
         output.print("this");
     });
-    DEFPRINT(AST_Constant, function(self, output){
+    DEFPRINT(AST_Constant, function(self, output) {
         output.print(self.getValue());
     });
-    DEFPRINT(AST_String, function(self, output){
+    DEFPRINT(AST_String, function(self, output) {
         output.print_string(self.getValue(), self.quote, in_directive);
     });
-    DEFPRINT(AST_Number, function(self, output){
+    DEFPRINT(AST_Number, function(self, output) {
         if (use_asm && self.start && self.start.raw != null) {
             output.print(self.start.raw);
         } else {
@@ -1415,7 +1380,7 @@ function OutputStream(options) {
         }
     });
 
-    DEFPRINT(AST_RegExp, function(self, output){
+    DEFPRINT(AST_RegExp, function(self, output) {
         var regexp = self.getValue();
         var str = regexp.toString();
         if (regexp.raw_source) {
@@ -1487,7 +1452,7 @@ function OutputStream(options) {
             output.print("{}");
         else if (stmt instanceof AST_BlockStatement)
             stmt.print(output);
-        else output.with_block(function(){
+        else output.with_block(function() {
             output.indent();
             stmt.print(output);
             output.newline();

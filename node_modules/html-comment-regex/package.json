@@ -1,6 +1,6 @@
 {
   "name": "html-comment-regex",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Regular expression for matching HTML comments",
   "homepage": "https://github.com/stevemao/html-comment-regex",
   "author": {

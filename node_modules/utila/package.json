@@ -1,15 +1,14 @@
 {
   "name": "utila",
-  "version": "0.3.3",
+  "version": "0.4.0",
   "description": "notareplacementforunderscore",
-  "main": "scripts/js/lib/utila.js",
+  "main": "lib/utila.js",
   "devDependencies": {
     "coffee-script": "~1.6.3",
     "little-popo": "~0.1"
   },
   "scripts": {
-    "test": "node ./node_modules/coffee-script/bin/cake test",
-    "prepublish": "node ./node_modules/coffee-script/bin/cake build"
+    "prepublish": "coffee --bare --compile --output ./lib ./src"
   },
   "repository": {
     "type": "git",
@@ -22,6 +21,5 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/AriaMinaei/utila/issues"
-  },
-  "dependencies": {}
+  }
 }

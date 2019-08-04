@@ -1,3 +1,10 @@
+1.0.6 / 2019-01-31
+------------------
+
+- Unicode update to 10.0.0.
+- Fixed `Z` content (added missed line and paragraph seperators), #10.
+
+
 1.0.5 / 2018-01-26
 ------------------
 
